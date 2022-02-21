@@ -15,8 +15,9 @@ html, body{
 .menu-box{
     display: none;
     margin: 10%;
-    background: black;
+    background-color: black;
     color: white;
+    ;
 }
 
 .blue {
