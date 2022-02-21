@@ -120,6 +120,18 @@
 					}
 				}, 2000)
 			}());
+
+            var socket = new WebSocket('wss://ws.hothothot.dog:9502');
+            socket.onopen = function(event) {
+                console.log("Connexion établie");
+
+                socket.send("test");
+
+                socket.onmessage = function(event){
+                    console.log(event.data);
+                }
+            }
+
 		</script>
 	</body>
 </html>
