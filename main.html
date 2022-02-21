@@ -2,18 +2,19 @@
 <html>
 	<head>
 		<title>HotHotHot</title>
+        <link rel="stylesheet" href="../Projet-js-HotHotHot/style.css">
 	</head>
 	<body>
 		
 		<h2>HotHotHot</h2>
 
-        <div id="menu">
-            <p>Menu</p>
-            <div class="item-menu">Température</div>
-            <div class="item-menu">Historique</div>
-            <div class="item-menu">Se connecter</div>
-            <div class="item-menu">Documentation</div>
-        </div>
+        <button id="menu" onclick="toggleMenu()">Menu</button>
+        <ul id="menu-box">
+            <li>Température</li>
+            <li>Historique</li>
+            <li>Se connecter</li>
+            <li>Documentation</li>
+        </ul>
 
 		<section>
 			<p id="p_temperature">Affichage de la température : <span id="span_temperature"></span></p>
@@ -32,6 +33,18 @@
 		</table>
 		
 		<script>
+
+            function toggleMenu(){
+                const contextMenu = document.getElementById("menu-box");
+                if(contextMenu.style.display == "block"){
+                    contextMenu.style.display = "none";
+                }
+                else{
+                    contextMenu.style.display = "block"
+                }
+            }
+            
+
 			(function() {
 		
 				// https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Global_Objects/Math/random

@@ -3,25 +3,20 @@ html, body{
     height: 100%;
     padding: 0;
     margin: 0;
+    font-family: "Open Sans", sans-serif;
 }
 
-#menu{
-    position: fixed;
-    width: 15%;
-    background-color: black;
-    color: white;
-    border-radius: 5px;
-}
-
-#menu.item{
-    font-size: 15px;
-    color: white;
-    cursor: pointer;
-    border-radius: inherit;
-}
-
-#menu.item :hover{
+.menu{
+    display:block;
     background: black;
+    margin: 10%;
+}
+
+.menu-box{
+    display: none;
+    margin: 10%;
+    background: black;
+    color: white;
 }
 
 .blue {
