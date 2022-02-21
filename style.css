@@ -1,0 +1,49 @@
+html, body{
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+#menu{
+    position: fixed;
+    width: 15%;
+    background-color: black;
+    color: white;
+    border-radius: 5px;
+}
+
+#menu.item{
+    font-size: 15px;
+    color: white;
+    cursor: pointer;
+    border-radius: inherit;
+}
+
+#menu.item :hover{
+    background: black;
+}
+
+.blue {
+    border: 2px solid blue;
+}
+
+.green {
+    border: 2px solid green;
+}
+
+.orange {
+    border: 2px solid orange;
+}
+
+.red {
+    border: 2px solid red;
+}
+
+#span_temperature {
+    padding: 5px;
+}
+
+#ligne_modele {
+    visibility: hidden;
+}
