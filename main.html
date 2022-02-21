@@ -7,30 +7,40 @@
 	<body>
 		
 		<h2>HotHotHot</h2>
+        <nav>
+            <button id="menu" onclick="toggleMenu()">Menu</button>
+            <ul id="menu-box" role="tablist">
+                <li role="tab"><a href="#temp">Température</a></li>
+                <li role="tab"><a href="#histo">Historique</a></li>
+                <li role="tab"><a href="#login">Se connecter</a></li>
+                <li role="tab"><a href="#doc">Documentation</a></li>
+            </ul>
+        </nav>
 
-        <button id="menu" onclick="toggleMenu()">Menu</button>
-        <ul id="menu-box">
-            <li>Température</li>
-            <li>Historique</li>
-            <li>Se connecter</li>
-            <li>Documentation</li>
-        </ul>
-
-		<section>
-			<p id="p_temperature">Affichage de la température : <span id="span_temperature"></span></p>
+        <section role="tabpanel" class='active' id="temp">
+			<p id="p_temperature_ext">Affichage de la température extérieure: <span aria-live="assertive" id="span_temperature_ext"></span></p>
+            <p id="p_temperature_int">Affichage de la température intérieure: <span aria-live="assertive" id="span_temperature_int"></span></p>
 		</section>
 
-		<table border="1">
+		<table role="tabpanel" id="histo">
 			<tr><th colspan="2">Historique</th></tr>
 			<tr>
 				<th>Date</th>
 				<th>Température</th>
 			</tr>
-			<tr id="ligne_modele" class="tr_ligne">
+			<tr id="ligne_modele">
 				<td class="td_date"></td>
 				<td class="td_temperature"></td>
 			</tr>
 		</table>
+
+        <section role="tabpanel" id="login">
+            <p> Test login</p>
+        </section>
+
+        <section role="tabpanel" id="doc">
+            <p> Test doc</p>
+        </section>
 		
 		<script>
 
@@ -44,6 +54,18 @@
                 }
             }
             
+            Array.from(document.querySelectorAll('nav ul li a')).forEach(function(element_a) {
+				element_a.addEventListener('click', 
+					function(event) {
+						Array.from(document.querySelectorAll('.active')).forEach(function(element_section_ou_table) {
+							element_section_ou_table.removeAttribute('class');
+						});
+						let element_a_id = event.target.attributes.href.value.replace('#', '');
+						document.getElementById(element_a_id).setAttribute('class', 'active');
+					}
+				);
+			});
+
 
 			(function() {
 		
@@ -67,16 +89,22 @@
 				// https://developer.mozilla.org/fr/docs/Web/API/Document_Object_Model
 				// https://developer.mozilla.org/fr/docs/Web/API/Node
 				// https://developer.mozilla.org/fr/docs/Web/API/Element
-				var p_temperature = document.getElementById('p_temperature');
-				var section = p_temperature.parentNode;
-				var span_temperature =  document.getElementById('span_temperature');
+				var p_temperature_ext = document.getElementById('p_temperature_ext');
+                var p_temperature_int = document.getElementById('p_temperature_int');
+
+				var section_ext = p_temperature_ext.parentNode;
+                var section_int = p_temperature_int.parentNode;
+
+				var span_temperature_ext =  document.getElementById('span_temperature_ext');
+                var span_temperature_int = document.getElementById('span_temperature_int');
 				var i = 0;
+
 				// https://developer.mozilla.org/en-US/docs/Web/API/setInterval
 				var interval = setInterval(function() {
 					if(i < A_temperatures.length) {
-						if(document.getElementById('titre_message'))
-							document.getElementById('titre_message').remove();
-							
+						if(document.getElementById('titre_message_int')) document.getElementById('titre_message_int').remove();
+						if(document.getElementById('titre_message_ext')) document.getElementById('titre_message_ext').remove();	
+
 						let I_temperature = A_temperatures[i];
 						
 						let color = 'blue';
@@ -91,19 +119,40 @@
 						}
 						
 						++i;
-						span_temperature.setAttribute("class", color);
-						span_temperature.innerText = I_temperature;
+
+                        span_temperature_int.setAttribute("class", color);
+                        span_temperature_int.innerText = I_temperature;
+
+						span_temperature_ext.setAttribute("class", color);
+						span_temperature_ext.innerText = I_temperature;
 						
-						let titre_message = document.createElement("h4")
-						titre_message.setAttribute('id', 'titre_message');
-						if( I_temperature < 0 ) {
-							titre_message.innerText = 'Il fait froid';
+                        let titre_message_int = document.createElement("h4");
+                        titre_message_int.setAttribute('id', 'titre_message_int');
+
+                        if( 22 < I_temperature) {
+							titre_message_int.innerText = 'Baissez le chauffage !';
 						} 
-						else if ( 30 < I_temperature ) {
-							titre_message.innerText = 'Il fait chaud';
+						else if ( 50 < I_temperature ) {
+							titre_message_int.innerText = 'Appelez les pompiers ou arrêtez votre barbecue !';
+						}
+                        else if ( 12 > I_temperature ) {
+							titre_message_int.innerText = 'Montez le chauffage ou mettez un gros pull  !';
+						}
+                        else if ( 0 > I_temperature ) {
+							titre_message_int.innerText = 'Canalisations gelées, appelez SOS plombier et mettez un bonnet !';
+						}
+
+						let titre_message_ext = document.createElement("h4");
+						titre_message_ext.setAttribute('id', 'titre_message_ext');
+						if( I_temperature < 0 ) {
+							titre_message_ext.innerText = 'Banquise en vue !';
+						} 
+						else if ( 35 < I_temperature ) {
+							titre_message_ext.innerText = 'Hot Hot Hot !';
 						}
 						// https://developer.mozilla.org/fr/docs/Web/API/Node/insertBefore
-						section.insertBefore(titre_message, p_temperature); 
+						section_ext.insertBefore(titre_message_ext, p_temperature_ext); 
+                        section_int.insertBefore(titre_message_int, p_temperature_int);
 
 						let clone_historique_ligne = document.getElementById("ligne_modele").cloneNode(true);
 						clone_historique_ligne.setAttribute("id", "");	

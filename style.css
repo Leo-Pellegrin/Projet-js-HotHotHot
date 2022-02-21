@@ -43,3 +43,30 @@ html, body{
 #ligne_modele {
     visibility: hidden;
 }
+section, table {
+    display: none;
+}
+
+section.active {
+    display: initial;
+}
+
+table.active {
+    display: table;
+}
+
+table, tr, th, td {
+    border: 1px solid #000;
+}
+
+.p_temperature_ext{
+    margin-left: 20%;
+    display: flex;
+    border-radius: solid black 2px ;
+}
+
+.p_temperature_int{
+    margin-right: 20%;
+    display: flex;
+    border-radius: solid black 2px ;
+}
