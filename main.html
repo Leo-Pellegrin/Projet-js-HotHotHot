@@ -3,45 +3,71 @@
 	<head>
 		<title>HotHotHot</title>
         <link rel="stylesheet" href="../Projet-js-HotHotHot/style.css">
+		<script src="package/dist/chart.js"></script>
+		<meta charset="utf-8"/>
 	</head>
 	<body>
+		<div class="container">
+
+			<!-- Menu de navigation -->
+			<nav>
+				<button id="menu" onclick="toggleMenu()">Menu</button>
+				<ul id="menu-box" role="tablist">
+					<li role="tab"><a href="#temp">Température</a></li>
+					<li role="tab"><a href="#histo">Historique</a></li>
+					<li role="tab"><a href="#login">Se connecter</a></li>
+					<li role="tab"><a href="#doc">Documentation</a></li>
+				</ul>
+			</nav>
+
+			<!-- Section Accueil -->
+			<section id="acceuil">
+				<h1>HotHotHot</h1>
+				<p> Bonjour, Bienvenue sur notre site ! </p>
+			</section>
+
+			<!-- SECTION TEMPERATURE -->
+        	<section role="tabpanel" class='active' id="temp">
+				<p id="p_temperature_ext">Affichage de la température extérieure: <span aria-live="assertive" id="span_temperature_ext"></span></p>
+            	<p id="p_temperature_int">Affichage de la température intérieure: <span aria-live="assertive" id="span_temperature_int"></span></p>
+			</section>
+
+			<!-- SECTION HISTORIQUE -->
+			<section id="histo" >
+				<table role="tabpanel" id="histo">
+					<tr><th colspan="2">Historique</th></tr>
+					<tr>
+						<th>Date</th>
+						<th>Température</th>
+					</tr>
+					<tr id="ligne_modele">
+						<td class="td_date"></td>
+						<td class="td_temperature"></td>
+					</tr>
+				</table>
+				<div>
+					<canvas id="myChart" width="400" height="400">
+					</canvas>
+				</div>		
+			</section>
+
+
+			<!-- SECTION LOGIN 
+			<section role="tabpanel" id="login">
+				<p> Test login</p>
+			</section> -->
 		
-		<h2>HotHotHot</h2>
-        <nav>
-            <button id="menu" onclick="toggleMenu()">Menu</button>
-            <ul id="menu-box" role="tablist">
-                <li role="tab"><a href="#temp">Température</a></li>
-                <li role="tab"><a href="#histo">Historique</a></li>
-                <li role="tab"><a href="#login">Se connecter</a></li>
-                <li role="tab"><a href="#doc">Documentation</a></li>
-            </ul>
-        </nav>
+			<!-- SECTION DOCUMENTATION -->
+			<section role="tabpanel" id="doc">
+				<p> Test doc</p>
+			</section>
 
-        <section role="tabpanel" class='active' id="temp">
-			<p id="p_temperature_ext">Affichage de la température extérieure: <span aria-live="assertive" id="span_temperature_ext"></span></p>
-            <p id="p_temperature_int">Affichage de la température intérieure: <span aria-live="assertive" id="span_temperature_int"></span></p>
-		</section>
+			<!-- BAS DE PAGE -->
+			<footer>
+				<h4>Bas de page</h4>
+			</footer>
+		</div>
 
-		<table role="tabpanel" id="histo">
-			<tr><th colspan="2">Historique</th></tr>
-			<tr>
-				<th>Date</th>
-				<th>Température</th>
-			</tr>
-			<tr id="ligne_modele">
-				<td class="td_date"></td>
-				<td class="td_temperature"></td>
-			</tr>
-		</table>
-
-        <section role="tabpanel" id="login">
-            <p> Test login</p>
-        </section>
-
-        <section role="tabpanel" id="doc">
-            <p> Test doc</p>
-        </section>
-		
 		<script>
 
             function toggleMenu(){
@@ -178,9 +204,66 @@
 
                 socket.onmessage = function(event){
                     console.log(event.data);
-                }
+					A_temperatures = event.data;
+                }	
             }
+			if(socket.readyState != 1){
+				fetch("https://hothothot.dog/api/capteurs",
+			{
+				headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
+				},
+				method: "GET",
+			})
+			.then(function(response){
+				return response.json().then(function(O_json){
+					console.log(O_json);
+					})
+				})	
+			}
+			
 
+
+			function getDate(){
+				return d = new Date();
+			}
+
+
+		</script>
+		
+		<script>
+			var canvas = document.getElementById("myChart");
+			var data = {
+				labels: ["0h", "2h", "4h", "6h", "8h", "10h", "12h"],
+				datasets: [
+					{
+						label: 'My First dataset',
+						backgroundColor: 'rgb(255, 99, 132)',
+						borderColor: 'rgb(255, 99, 132)',
+						data: [0, 10, 5, 2, 20, 30, 45],
+					}
+				]
+			};
+
+			function adddata(){
+				myLineChart.data.datasets[0].data[7] = getRandomArbitrary(0, 30);
+				myLineChart.data.labels[7] = "Newly added";
+				myLineChart.update();
+			}
+
+			var option = {
+				showLines: true,
+				responsive: false
+			};
+
+			const config = {
+				type: 'line',
+				data: data,
+				options: option
+			};
+
+			const myChart = new Chart(document.getElementById("myChart"), config);
 		</script>
 	</body>
 </html>
