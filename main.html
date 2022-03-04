@@ -69,7 +69,7 @@
 		</div>
 
 		<script>
-
+			//Function pour afficher/cacher le menu
             function toggleMenu(){
                 const contextMenu = document.getElementById("menu-box");
                 if(contextMenu.style.display == "block"){
@@ -80,6 +80,7 @@
                 }
             }
             
+			//Systemes d'onglets
             Array.from(document.querySelectorAll('nav ul li a')).forEach(function(element_a) {
 				element_a.addEventListener('click', 
 					function(event) {
@@ -92,25 +93,39 @@
 				);
 			});
 
+			// Gestion du WSS si il fonctionne ou gestion de l'API 
 
+			var socket = new WebSocket('wss://ws.hothothot.dog:9502');
+            socket.onopen = function(event) {
+                console.log("Connexion établie");
+
+                socket.send("test");
+
+                socket.onmessage = function(event){
+                    console.log(event.data);
+                }	
+            }
+			if(socket.readyState != 1){
+				fetch("https://hothothot.dog/api/capteurs",
+				{
+					headers: {
+						'Accept': 'application/json',
+						'Content-Type': 'application/json'
+					},
+					method: "GET",
+				})
+				.then(function(response){
+					return response.json().then(function(O_json){
+						console.log(O_json);
+						console.log(O_json.nom['interieur'].valeur)
+						})
+					})	
+				}
+
+				
+			// Afficher les alertes et les valeurs des capteurs
 			(function() {
 		
-				// https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Global_Objects/Math/random
-				//
-				// On renvoie un nombre aléatoire entre une valeur min (incluse)
-				// et une valeur max (exclue)
-				function getRandomArbitrary(min, max) {
-				  return  Math.floor(Math.random() * (max - min) + min);
-				}
-				
-				// https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Global_Objects/Array
-				var A_temperatures = [];
-				for(var i = 20; i > 0; --i) {
-					var x = getRandomArbitrary(-10,40);
-					A_temperatures.push(x);
-				}
-				
-				console.log(A_temperatures);
 				
 				// https://developer.mozilla.org/fr/docs/Web/API/Document_Object_Model
 				// https://developer.mozilla.org/fr/docs/Web/API/Node
@@ -196,32 +211,7 @@
 				}, 2000)
 			}());
 
-            var socket = new WebSocket('wss://ws.hothothot.dog:9502');
-            socket.onopen = function(event) {
-                console.log("Connexion établie");
 
-                socket.send("test");
-
-                socket.onmessage = function(event){
-                    console.log(event.data);
-					A_temperatures = event.data;
-                }	
-            }
-			if(socket.readyState != 1){
-				fetch("https://hothothot.dog/api/capteurs",
-			{
-				headers: {
-					'Accept': 'application/json',
-					'Content-Type': 'application/json'
-				},
-				method: "GET",
-			})
-			.then(function(response){
-				return response.json().then(function(O_json){
-					console.log(O_json);
-					})
-				})	
-			}
 			
 
 
@@ -233,6 +223,8 @@
 		</script>
 		
 		<script>
+
+			//Création du graphique 
 			var canvas = document.getElementById("myChart");
 			var data = {
 				labels: ["0h", "2h", "4h", "6h", "8h", "10h", "12h"],
@@ -245,13 +237,7 @@
 					}
 				]
 			};
-
-			function adddata(){
-				myLineChart.data.datasets[0].data[7] = getRandomArbitrary(0, 30);
-				myLineChart.data.labels[7] = "Newly added";
-				myLineChart.update();
-			}
-
+			
 			var option = {
 				showLines: true,
 				responsive: false
@@ -264,6 +250,13 @@
 			};
 
 			const myChart = new Chart(document.getElementById("myChart"), config);
+
+			//Ajout d'une valeur au graphe
+			function adddata(){
+				myLineChart.data.datasets[0].data[7] = getRandomArbitrary(0, 30);
+				myLineChart.data.labels[7] = "Newly added";
+				myLineChart.update();
+			}
 		</script>
 	</body>
 </html>
