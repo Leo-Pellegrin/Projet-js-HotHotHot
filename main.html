@@ -68,7 +68,23 @@
 			</footer>
 		</div>
 
+		<script src="js/TempModel.js" charset="utf-8"></script>
+		<script src="js/TempObserver.js" charset="utf-8"></script>
 		<script>
+			fetch("https://hothothot.dog/api/capteurs",
+				{
+					headers: {
+						'Accept': 'application/json',
+						'Content-Type': 'application/json'
+					},
+					method: "GET",
+				})
+				.then(function(response){
+					console.log(response.json())
+				})
+			
+
+
 			//Function pour afficher/cacher le menu
             function toggleMenu(){
                 const contextMenu = document.getElementById("menu-box");
@@ -92,39 +108,9 @@
 					}
 				);
 			});
-
-			// Gestion du WSS si il fonctionne ou gestion de l'API 
-
-			var socket = new WebSocket('wss://ws.hothothot.dog:9502');
-            socket.onopen = function(event) {
-                console.log("Connexion établie");
-
-                socket.send("test");
-
-                socket.onmessage = function(event){
-                    console.log(event.data);
-                }	
-            }
-			if(socket.readyState != 1){
-				fetch("https://hothothot.dog/api/capteurs",
-				{
-					headers: {
-						'Accept': 'application/json',
-						'Content-Type': 'application/json'
-					},
-					method: "GET",
-				})
-				.then(function(response){
-					return response.json().then(function(O_json){
-						console.log(O_json);
-						console.log(O_json.capteurs)
-						})
-					})	
-				}
-
-				
+			
 			// Afficher les alertes et les valeurs des capteurs
-			(function() {
+			function DisplayAlerteCapteurs(json) {
 		
 				
 				// https://developer.mozilla.org/fr/docs/Web/API/Document_Object_Model
@@ -140,84 +126,6 @@
                 var span_temperature_int = document.getElementById('span_temperature_int');
 				var i = 0;
 
-				// https://developer.mozilla.org/en-US/docs/Web/API/setInterval
-				var interval = setInterval(function() {
-					if(i < A_temperatures.length) {
-						if(document.getElementById('titre_message_int')) document.getElementById('titre_message_int').remove();
-						if(document.getElementById('titre_message_ext')) document.getElementById('titre_message_ext').remove();	
-
-						let I_temperature = A_temperatures[i];
-						
-						let color = 'blue';
-						if( 0 < I_temperature && I_temperature <= 20 ) {
-							color = 'green';
-						}
-						else if( 20 < I_temperature && I_temperature <= 30 ) {
-							color = 'orange';
-						}
-						else if( 30 < I_temperature && I_temperature <= 40 ) {
-							color = 'red';
-						}
-						
-						++i;
-
-                        span_temperature_int.setAttribute("class", color);
-                        span_temperature_int.innerText = I_temperature;
-
-						span_temperature_ext.setAttribute("class", color);
-						span_temperature_ext.innerText = I_temperature;
-						
-                        let titre_message_int = document.createElement("h4");
-                        titre_message_int.setAttribute('id', 'titre_message_int');
-
-                        if( 22 < I_temperature) {
-							titre_message_int.innerText = 'Baissez le chauffage !';
-						} 
-						else if ( 50 < I_temperature ) {
-							titre_message_int.innerText = 'Appelez les pompiers ou arrêtez votre barbecue !';
-						}
-                        else if ( 12 > I_temperature ) {
-							titre_message_int.innerText = 'Montez le chauffage ou mettez un gros pull  !';
-						}
-                        else if ( 0 > I_temperature ) {
-							titre_message_int.innerText = 'Canalisations gelées, appelez SOS plombier et mettez un bonnet !';
-						}
-
-						let titre_message_ext = document.createElement("h4");
-						titre_message_ext.setAttribute('id', 'titre_message_ext');
-						if( I_temperature < 0 ) {
-							titre_message_ext.innerText = 'Banquise en vue !';
-						} 
-						else if ( 35 < I_temperature ) {
-							titre_message_ext.innerText = 'Hot Hot Hot !';
-						}
-						// https://developer.mozilla.org/fr/docs/Web/API/Node/insertBefore
-						section_ext.insertBefore(titre_message_ext, p_temperature_ext); 
-                        section_int.insertBefore(titre_message_int, p_temperature_int);
-
-						let clone_historique_ligne = document.getElementById("ligne_modele").cloneNode(true);
-						clone_historique_ligne.setAttribute("id", "");	
-						clone_historique_ligne.querySelector(".td_date").innerText = Date().toString();
-						clone_historique_ligne.querySelector(".td_temperature").innerText = I_temperature;
-						clone_historique_ligne.style.visibility = "visible";
-						let table_tbody = document.querySelector("table tbody");
-						// https://developer.mozilla.org/fr/docs/Web/API/Node/insertBefore
-						table_tbody.insertBefore(clone_historique_ligne, table_tbody.querySelector("#ligne_modele").nextSibling);
-
-					} else {
-						clearInterval(interval);
-						interval = null;
-					}
-				}, 2000)
-			}());
-
-
-			
-
-
-			function getDate(){
-				return d = new Date();
-			}
 
 
 		</script>
