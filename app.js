@@ -14,9 +14,13 @@ function main () {
 async function askNotificationsPermission () {
     // fonction qui sert à demanderla permission
     const permission = await Notification.requestPermission()
+    if (permission == 'granted') {
+        registerServiceWorker()
+    }
+}
 
-
-
+async function registerServiceWorker() {
+    
 }
 
 
