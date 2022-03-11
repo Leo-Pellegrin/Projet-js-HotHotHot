@@ -80,7 +80,10 @@
 					method: "GET",
 				})
 				.then(function(response){
-					console.log(response.json())
+					response.json()
+					.then(function(data){
+						console.log(data)
+					})
 				})
 			
 
@@ -108,7 +111,7 @@
 					}
 				);
 			});
-			
+
 			// Afficher les alertes et les valeurs des capteurs
 			function DisplayAlerteCapteurs(json) {
 		
@@ -125,7 +128,7 @@
 				var span_temperature_ext =  document.getElementById('span_temperature_ext');
                 var span_temperature_int = document.getElementById('span_temperature_int');
 				var i = 0;
-
+			}
 
 
 		</script>
