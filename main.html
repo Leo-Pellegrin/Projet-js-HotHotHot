@@ -70,24 +70,8 @@
 
 		<script src="js/TempModel.js" charset="utf-8"></script>
 		<script src="js/TempObserver.js" charset="utf-8"></script>
-		<script>
-			fetch("https://hothothot.dog/api/capteurs",
-				{
-					headers: {
-						'Accept': 'application/json',
-						'Content-Type': 'application/json'
-					},
-					method: "GET",
-				})
-				.then(function(response){
-					response.json()
-					.then(function(data){
-						console.log(data)
-					})
-				})
-			
-
-
+		<script src="js/AlerteObserver.js" charset="utf-8"></script>
+		<script type="text/javascript">
 			//Function pour afficher/cacher le menu
             function toggleMenu(){
                 const contextMenu = document.getElementById("menu-box");
@@ -112,28 +96,22 @@
 				);
 			});
 
-			// Afficher les alertes et les valeurs des capteurs
-			function DisplayAlerteCapteurs(json) {
-		
-				
-				// https://developer.mozilla.org/fr/docs/Web/API/Document_Object_Model
-				// https://developer.mozilla.org/fr/docs/Web/API/Node
-				// https://developer.mozilla.org/fr/docs/Web/API/Element
-				var p_temperature_ext = document.getElementById('p_temperature_ext');
-                var p_temperature_int = document.getElementById('p_temperature_int');
+			var section_ext = p_temperature_ext.parentNode;
+            var section_int = p_temperature_int.parentNode;
 
-				var section_ext = p_temperature_ext.parentNode;
-                var section_int = p_temperature_int.parentNode;
+			var TempModel = new TempModel();
 
-				var span_temperature_ext =  document.getElementById('span_temperature_ext');
-                var span_temperature_int = document.getElementById('span_temperature_int');
-				var i = 0;
-			}
+			var TempObserverExt = new TempObserver(p_temperature_ext);
+			var TempObserverInt = new TempObserver(p_temperature_int);
 
+			var AlerteObserverExt = new AlerteObserver(section_ext);
+			var AlerteObserverInt = new AlerteObserver(section_int);
 
-		</script>
-		
-		<script>
+			TempModel.addObservers(TempObserverExt);
+			TempModel.addObservers(TempObserverInt);
+
+			setInterval(TempModel.getValueFromApi(valueExt), 2000);
+			setInterval(TempModel.getValueFromApi(valueInt), 2000);
 
 			//Création du graphique 
 			var canvas = document.getElementById("myChart");
@@ -144,7 +122,13 @@
 						label: 'My First dataset',
 						backgroundColor: 'rgb(255, 99, 132)',
 						borderColor: 'rgb(255, 99, 132)',
-						data: [0, 10, 5, 2, 20, 30, 45],
+						data: [],
+					},
+					{
+						label: "My Second dataset",
+						backgroundColor: 'rgb(99, 255, 132)',
+						borderColor: 'rgb(99, 132, 255)',
+						data: [],
 					}
 				]
 			};
@@ -163,11 +147,12 @@
 			const myChart = new Chart(document.getElementById("myChart"), config);
 
 			//Ajout d'une valeur au graphe
-			function adddata(){
-				myLineChart.data.datasets[0].data[7] = getRandomArbitrary(0, 30);
-				myLineChart.data.labels[7] = "Newly added";
-				myLineChart.update();
-			}
+			setInterval(function adddata(model){
+				myChart.data.datasets[0].data.push(model.valueExt);
+				myChart.data.datasets[1].data.push(model.valueInt);
+				myChart.data.labels.push("Newly added");
+				myChart.update();
+			}, 2000);
 		</script>
 	</body>
 </html>
