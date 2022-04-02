@@ -49,8 +49,13 @@
 					</tr>
 				</table>
 				<div>
-					<canvas id="myChartInt" width="400" height="400"></canvas>
-					<canvas id="myChartExt" width="400" height="400"></canvas>
+					<p id="MaxInt">Value Maximale Intérieure: <span aria-live="assertive" id="span_tempmax_int"></span></p> 
+					<p id="MinInt">Value Minimale Intérieure: <span aria-live="assertive" id="span_tempmin_int"></span></p> 
+
+					<p id="MaxExt">Value Maximale Extérieure: <span aria-live="assertive" id="span_tempmax_ext"></span></p> 
+					<p id="MinExt">Value Minimale Extérieure: <span aria-live="assertive" id="span_tempmin_ext"></span></p> 
+
+					<canvas id="myChart" width="400" height="400"></canvas>
 				</div>		
 			</section>
 
@@ -161,97 +166,93 @@
 
 			var section_ext = p_temperature_ext.parentNode;
 			var section_int = p_temperature_int.parentNode;
-
+			
 			var span_temperature_ext =  document.getElementById('span_temperature_ext');
 			var span_temperature_int = document.getElementById('span_temperature_int');
-			var i = 0;
+			
+			var span_tempmax_int = document.getElementById("span_tempmax_int");
+			var span_tempmin_int = document.getElementById("span_tempmin_int");
+			var span_tempmax_ext = document.getElementById("span_tempmax_ext");
+			var span_tempmin_ext = document.getElementById("span_tempmin_ext");
 
 			// https://developer.mozilla.org/en-US/docs/Web/API/setInterval
 			var interval = setInterval(function(){
-				if(i < A_temperatures.length) {
-					if(document.getElementById('titre_message_int')) document.getElementById('titre_message_int').remove();
-					if(document.getElementById('titre_message_ext')) document.getElementById('titre_message_ext').remove();	
+				if(document.getElementById('titre_message_int')) document.getElementById('titre_message_int').remove();
+				if(document.getElementById('titre_message_ext')) document.getElementById('titre_message_ext').remove();	
 
-					tempint, tempext = getValueAPI();
+				tempint, tempext = getValueAPI();
 
-					//Système de couleur pour les températures
-					let color = 'blue';
+				//Système de couleur pour les températures
+				let color = 'blue';
 
-					if( 0 < I_temperature && I_temperature <= 20 ) {
-						color = 'green';				
-					}
-					else if( 20 < I_temperature && I_temperature <= 30 ) {
-					color = 'orange';
-					}
-					else if( 30 < I_temperature && I_temperature <= 40 ) {
-					color = 'red';
-					}
-
-					++i;
-
-					span_temperature_int.setAttribute("class", color);
-					span_temperature_int.innerText = I_temperature;
-
-					span_temperature_ext.setAttribute("class", color);
-					span_temperature_ext.innerText = I_temperature;
-
-					//Système de notification intérieure
-
-					let titre_message_int = document.createElement("h4");
-					titre_message_int.setAttribute('id', 'titre_message_int');
-
-					if( 22 < tempint) {
-						titre_message_int.innerText = 'Baissez le chauffage !';
-						const  notifications = new Notification ('HOthOT Hot',{body: 'Baissez le chauffage'});
-					
-						titre_message_int.innerText = 'Appelez les pompiers ou arrêtez votre barbecue !';
-						const  notifications1 = new Notification ('HOthOT Hot',{body: 'Appelez les pompiers ou arrêtez votre barbecue'});
-					}
-					else if ( 50 < tempint ) {
-						titre_message_int.innerText = 'Appelez les pompiers ou arrêtez votre barbecue !';
-						const  notifications2 = new Notification ('HOthOT Hot',{body: 'Appelez les pompiers ou arrêtez votre barbecue !'});
-					}
-					else if ( 12 > tempint ) {
-						titre_message_int.innerText = 'Montez le chauffage ou mettez un gros pull  !';
-						const  notifications3 = new Notification ('HOthOT Hot',{body: 'Montez le chauffage ou mettez un gros pull  !'});
-					}
-					else if ( 0 > tempint ) {
-						titre_message_int.innerText = 'Canalisations gelées, appelez SOS plombier et mettez un bonnet !';
-						const  notifications3 = new Notification ('HOthOT Hot',{body: 'Canalisations gelées, appelez SOS plombier et mettez un bonnet !'});
-					}
-
-					//Système de notification extérieure
-
-					let titre_message_ext = document.createElement("h4");
-					titre_message_ext.setAttribute('id', 'titre_message_ext');
-
-					if( tempext < 0 ) {
-						titre_message_ext.innerText = 'Banquise en vue !';
-						const  notifications3 = new Notification ('HOthOT Hot',{body: 'Canalisations gelées, appelez SOS plombier et mettez un bonnet !'});
-        			} 
-        			else if ( 35 < tempext ) {
-            			titre_message_ext.innerText = 'Hot Hot Hot !';
-						const  notifications3 = new Notification ('HOthOT Hot',{body: 'Hot Hot Hot !'});
-        			}
-
-					// https://developer.mozilla.org/fr/docs/Web/API/Node/insertBefore
-					section_ext.insertBefore(titre_message_ext, p_temperature_ext); 
-								section_int.insertBefore(titre_message_int, p_temperature_int);
-
-					let clone_historique_ligne = document.getElementById("ligne_modele").cloneNode(true);
-					clone_historique_ligne.setAttribute("id", "");	
-					clone_historique_ligne.querySelector(".td_date").innerText = Date().toString();
-					clone_historique_ligne.querySelector(".td_temperature").innerText = I_temperature;
-					clone_historique_ligne.style.visibility = "visible";
-					let table_tbody = document.querySelector("table tbody");
-					// https://developer.mozilla.org/fr/docs/Web/API/Node/insertBefore
-					table_tbody.insertBefore(clone_historique_ligne, table_tbody.querySelector("#ligne_modele").nextSibling);
-
-				} 
-				else {
-					clearInterval(interval);
-					interval = null;
+				if( 0 < I_temperature && I_temperature <= 20 ) {
+					color = 'green';				
 				}
+				else if( 20 < I_temperature && I_temperature <= 30 ) {
+					color = 'orange';
+				}
+				else if( 30 < I_temperature && I_temperature <= 40 ) {
+					color = 'red';
+				}
+
+				span_temperature_int.setAttribute("class", color);
+				span_temperature_int.innerText = I_temperature;
+
+				span_temperature_ext.setAttribute("class", color);
+				span_temperature_ext.innerText = I_temperature;
+
+				//Système de notification intérieure
+
+				let titre_message_int = document.createElement("h4");
+				titre_message_int.setAttribute('id', 'titre_message_int');
+
+				if( 22 < tempint) {
+					titre_message_int.innerText = 'Baissez le chauffage !';
+					const  notifications = new Notification ('HOthOT Hot',{body: 'Baissez le chauffage'});
+					
+					titre_message_int.innerText = 'Appelez les pompiers ou arrêtez votre barbecue !';
+					const  notifications1 = new Notification ('HOthOT Hot',{body: 'Appelez les pompiers ou arrêtez votre barbecue'});
+				}
+				else if ( 50 < tempint ) {
+					titre_message_int.innerText = 'Appelez les pompiers ou arrêtez votre barbecue !';
+					const  notifications2 = new Notification ('HOthOT Hot',{body: 'Appelez les pompiers ou arrêtez votre barbecue !'});
+				}
+				else if ( 12 > tempint ) {
+					titre_message_int.innerText = 'Montez le chauffage ou mettez un gros pull  !';
+					const  notifications3 = new Notification ('HOthOT Hot',{body: 'Montez le chauffage ou mettez un gros pull  !'});
+				}
+				else if ( 0 > tempint ) {
+					titre_message_int.innerText = 'Canalisations gelées, appelez SOS plombier et mettez un bonnet !';
+					const  notifications3 = new Notification ('HOthOT Hot',{body: 'Canalisations gelées, appelez SOS plombier et mettez un bonnet !'});
+				}
+
+				//Système de notification extérieure
+
+				let titre_message_ext = document.createElement("h4");
+				titre_message_ext.setAttribute('id', 'titre_message_ext');
+
+				if( tempext < 0 ) {
+					titre_message_ext.innerText = 'Banquise en vue !';
+					const  notifications3 = new Notification ('HOthOT Hot',{body: 'Canalisations gelées, appelez SOS plombier et mettez un bonnet !'});
+        		} 
+        		else if ( 35 < tempext ) {
+            		titre_message_ext.innerText = 'Hot Hot Hot !';
+					const  notifications3 = new Notification ('HOthOT Hot',{body: 'Hot Hot Hot !'});
+        		}
+
+				// https://developer.mozilla.org/fr/docs/Web/API/Node/insertBefore
+				section_ext.insertBefore(titre_message_ext, p_temperature_ext); 
+				section_int.insertBefore(titre_message_int, p_temperature_int);
+
+				let clone_historique_ligne = document.getElementById("ligne_modele").cloneNode(true);
+				clone_historique_ligne.setAttribute("id", "");	
+				clone_historique_ligne.querySelector(".td_date").innerText = Date().toString();
+				clone_historique_ligne.querySelector(".td_temperature").innerText = I_temperature;
+				clone_historique_ligne.style.visibility = "visible";
+				let table_tbody = document.querySelector("table tbody");
+				// https://developer.mozilla.org/fr/docs/Web/API/Node/insertBefore
+				table_tbody.insertBefore(clone_historique_ligne, table_tbody.querySelector("#ligne_modele").nextSibling);
+
 			}, 2000);
 
 			//Création des configs pour les graphique 
