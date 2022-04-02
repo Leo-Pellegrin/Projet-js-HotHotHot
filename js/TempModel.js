@@ -32,30 +32,7 @@ class TempModel {
     }
 
     getValueFromAPI(){
-        var socket = new WebSocket('wss://ws.hothothot.dog:9502');
-            socket.onopen = function(event) {
-                console.log("Connexion établie");
-
-                socket.send("test");
-
-                socket.onmessage = function(event){
-                    valueExt = event.data.capteurs[1][3];
-                    ValueInt = event.data.capteurs[0][3];
-                }	
-            }
-			if(socket.readyState != 1){
-				fetch("https://hothothot.dog/api/capteurs",
-				{
-					headers: {
-						'Accept': 'application/json',
-						'Content-Type': 'application/json'
-					},
-					method: "GET",
-				})
-				.then(function(response){
-					return response.json()
-				})
-        }
+        
         this.notifyObservers();
     }
 

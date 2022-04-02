@@ -49,8 +49,8 @@
 					</tr>
 				</table>
 				<div>
-					<canvas id="myChart" width="400" height="400">
-					</canvas>
+					<canvas id="myChartInt" width="400" height="400"></canvas>
+					<canvas id="myChartExt" width="400" height="400"></canvas>
 				</div>		
 			</section>
 
@@ -96,25 +96,166 @@
 				);
 			});
 
+			//Récupérer les valeurs de l'API
+			function getDataAPI(){
+				var socket = new WebSocket('wss://ws.hothothot.dog:9502');
+            	socket.onopen = function(event) {
+                	console.log("Connexion établie", event.data.capteurs[1][3]);
+
+                	socket.send("test");
+
+                	socket.onmessage = function(event){
+                    	valueExt = event.data.capteurs[1][3];
+                    	valueInt = event.data.capteurs[0][3];						
+						return valueExt, valueInt;
+                	}	
+           	 	}
+				if(socket.readyState != 1){
+					fetch("https://hothothot.dog/api/capteurs",
+					{
+						headers: {
+							'Accept': 'application/json',
+							'Content-Type': 'application/json'
+						},
+						method: "GET",
+					})
+					.then(function(response){
+						console.log("API par fetch", response.json());
+						return response.json();
+					})
+        		}
+			}
+
+			function askNotificationPermission() {
+  				// La fonction qui sert effectivement à demander la permission
+  				function handlePermission(permission) {
+   					 // On affiche ou non le bouton en fonction de la réponse
+    				if(Notification.permission === 'denied' || Notification.permission === 'default') {
+      					notificationBtn.style.display = 'block';
+    				} 
+					else {
+      					notificationBtn.style.display = 'none';
+    				}
+ 				}
+
+  				// Vérifions si le navigateur prend en charge les notifications
+  				if (!('Notification' in window)) {
+    				console.log("Ce navigateur ne prend pas en charge les notifications.");
+  				} 
+				else {
+    				if(checkNotificationPromise()) {
+      					Notification.requestPermission().then((permission) => {
+        					handlePermission(permission);
+      					})
+    				} 
+					else {
+      					Notification.requestPermission(function(permission) {
+        					handlePermission(permission);
+      					});
+    				}
+  				}
+			}
+
+			var p_temperature_ext = document.getElementById('p_temperature_ext');
+			var p_temperature_int = document.getElementById('p_temperature_int');
+
 			var section_ext = p_temperature_ext.parentNode;
-            var section_int = p_temperature_int.parentNode;
+			var section_int = p_temperature_int.parentNode;
 
-			var TempModel = new TempModel();
+			var span_temperature_ext =  document.getElementById('span_temperature_ext');
+			var span_temperature_int = document.getElementById('span_temperature_int');
+			var i = 0;
 
-			var TempObserverExt = new TempObserver(p_temperature_ext);
-			var TempObserverInt = new TempObserver(p_temperature_int);
+			// https://developer.mozilla.org/en-US/docs/Web/API/setInterval
+			var interval = setInterval(function(){
+				if(i < A_temperatures.length) {
+					if(document.getElementById('titre_message_int')) document.getElementById('titre_message_int').remove();
+					if(document.getElementById('titre_message_ext')) document.getElementById('titre_message_ext').remove();	
 
-			var AlerteObserverExt = new AlerteObserver(section_ext);
-			var AlerteObserverInt = new AlerteObserver(section_int);
+					tempint, tempext = getValueAPI();
 
-			TempModel.addObservers(TempObserverExt);
-			TempModel.addObservers(TempObserverInt);
+					//Système de couleur pour les températures
+					let color = 'blue';
 
-			setInterval(TempModel.getValueFromApi(valueExt), 2000);
-			setInterval(TempModel.getValueFromApi(valueInt), 2000);
+					if( 0 < I_temperature && I_temperature <= 20 ) {
+						color = 'green';				
+					}
+					else if( 20 < I_temperature && I_temperature <= 30 ) {
+					color = 'orange';
+					}
+					else if( 30 < I_temperature && I_temperature <= 40 ) {
+					color = 'red';
+					}
 
-			//Création du graphique 
-			var canvas = document.getElementById("myChart");
+					++i;
+
+					span_temperature_int.setAttribute("class", color);
+					span_temperature_int.innerText = I_temperature;
+
+					span_temperature_ext.setAttribute("class", color);
+					span_temperature_ext.innerText = I_temperature;
+
+					//Système de notification intérieure
+
+					let titre_message_int = document.createElement("h4");
+					titre_message_int.setAttribute('id', 'titre_message_int');
+
+					if( 22 < tempint) {
+						titre_message_int.innerText = 'Baissez le chauffage !';
+						const  notifications = new Notification ('HOthOT Hot',{body: 'Baissez le chauffage'});
+					
+						titre_message_int.innerText = 'Appelez les pompiers ou arrêtez votre barbecue !';
+						const  notifications1 = new Notification ('HOthOT Hot',{body: 'Appelez les pompiers ou arrêtez votre barbecue'});
+					}
+					else if ( 50 < tempint ) {
+						titre_message_int.innerText = 'Appelez les pompiers ou arrêtez votre barbecue !';
+						const  notifications2 = new Notification ('HOthOT Hot',{body: 'Appelez les pompiers ou arrêtez votre barbecue !'});
+					}
+					else if ( 12 > tempint ) {
+						titre_message_int.innerText = 'Montez le chauffage ou mettez un gros pull  !';
+						const  notifications3 = new Notification ('HOthOT Hot',{body: 'Montez le chauffage ou mettez un gros pull  !'});
+					}
+					else if ( 0 > tempint ) {
+						titre_message_int.innerText = 'Canalisations gelées, appelez SOS plombier et mettez un bonnet !';
+						const  notifications3 = new Notification ('HOthOT Hot',{body: 'Canalisations gelées, appelez SOS plombier et mettez un bonnet !'});
+					}
+
+					//Système de notification extérieure
+
+					let titre_message_ext = document.createElement("h4");
+					titre_message_ext.setAttribute('id', 'titre_message_ext');
+
+					if( tempext < 0 ) {
+						titre_message_ext.innerText = 'Banquise en vue !';
+						const  notifications3 = new Notification ('HOthOT Hot',{body: 'Canalisations gelées, appelez SOS plombier et mettez un bonnet !'});
+        			} 
+        			else if ( 35 < tempext ) {
+            			titre_message_ext.innerText = 'Hot Hot Hot !';
+						const  notifications3 = new Notification ('HOthOT Hot',{body: 'Hot Hot Hot !'});
+        			}
+
+					// https://developer.mozilla.org/fr/docs/Web/API/Node/insertBefore
+					section_ext.insertBefore(titre_message_ext, p_temperature_ext); 
+								section_int.insertBefore(titre_message_int, p_temperature_int);
+
+					let clone_historique_ligne = document.getElementById("ligne_modele").cloneNode(true);
+					clone_historique_ligne.setAttribute("id", "");	
+					clone_historique_ligne.querySelector(".td_date").innerText = Date().toString();
+					clone_historique_ligne.querySelector(".td_temperature").innerText = I_temperature;
+					clone_historique_ligne.style.visibility = "visible";
+					let table_tbody = document.querySelector("table tbody");
+					// https://developer.mozilla.org/fr/docs/Web/API/Node/insertBefore
+					table_tbody.insertBefore(clone_historique_ligne, table_tbody.querySelector("#ligne_modele").nextSibling);
+
+				} 
+				else {
+					clearInterval(interval);
+					interval = null;
+				}
+			}, 2000);
+
+			//Création des configs pour les graphique 
+			var canvas = document.getElementById("myChartInt");
 			var data = {
 				labels: ["0h", "2h", "4h", "6h", "8h", "10h", "12h"],
 				datasets: [
@@ -138,13 +279,15 @@
 				responsive: false
 			};
 
-			const config = {
+			const configint = {
 				type: 'line',
 				data: data,
 				options: option
 			};
 
-			const myChart = new Chart(document.getElementById("myChart"), config);
+			//Création des graphiques
+			const myChartInt = new Chart(document.getElementById("myChartInt"), configint);
+			const myChartExt = new Chart(document.getElementById("myChartExt"), configext)
 
 			//Ajout d'une valeur au graphe
 			setInterval(function adddata(model){
