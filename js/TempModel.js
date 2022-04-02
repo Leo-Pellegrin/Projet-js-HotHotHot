@@ -12,9 +12,9 @@ class TempModel {
         this.observers.push(o);
     }
 
-    notifyObservers(value){
+    notifyObservers(){
         for (let o of this.observers){
-            o.update(this, value);
+            o.update(this);
         }
     }
 
@@ -31,7 +31,7 @@ class TempModel {
         this.notifyObservers();
     }
 
-    getValueFromAPI(value){
+    getValueFromAPI(){
         var socket = new WebSocket('wss://ws.hothothot.dog:9502');
             socket.onopen = function(event) {
                 console.log("Connexion établie");
@@ -53,15 +53,10 @@ class TempModel {
 					method: "GET",
 				})
 				.then(function(response){
-					response.json().then(function(data){
-                        ValueInt = data.capteurs[0][3];
-                        valueExt = data.capteurs[0][3];
-                    })
+					return response.json()
 				})
         }
-        this.changeAlertExt();
-        this.changeAlertInt();
-        this.notifyObservers(value);
+        this.notifyObservers();
     }
 
     changeAlertInt(){
@@ -77,6 +72,7 @@ class TempModel {
         else if ( 0 > this.ValueInt ) {
             this.alertInt = 'Canalisations gelées, appelez SOS plombier et mettez un bonnet !';
         }
+        this.notifyObservers();
     }
 
     changeAlertExt(){

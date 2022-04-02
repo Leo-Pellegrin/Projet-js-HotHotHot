@@ -4,7 +4,7 @@ class TempObserver{
     }
 
     update(model, value){
-        this.element.innerHTML = model.this.value;
+        this.element.innerHTML = model.value;
         this.element.setAttribute("class", model.color);
     }
 }

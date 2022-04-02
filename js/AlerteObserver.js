@@ -4,6 +4,6 @@ class AlerteObserver{
     }
 
     update(model, alerte){
-        this.element.insertBefore(model.alerte, this.element)
+        this.element.innerHTML = model.alerte;
     }
 }
