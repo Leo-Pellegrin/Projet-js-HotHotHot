@@ -169,7 +169,7 @@
 			
 			var span_temperature_ext =  document.getElementById('span_temperature_ext');
 			var span_temperature_int = document.getElementById('span_temperature_int');
-			
+
 			var span_tempmax_int = document.getElementById("span_tempmax_int");
 			var span_tempmin_int = document.getElementById("span_tempmin_int");
 			var span_tempmax_ext = document.getElementById("span_tempmax_ext");
@@ -180,7 +180,7 @@
 				if(document.getElementById('titre_message_int')) document.getElementById('titre_message_int').remove();
 				if(document.getElementById('titre_message_ext')) document.getElementById('titre_message_ext').remove();	
 
-				tempint, tempext = getValueAPI();
+				var tempint, tempext = getValueAPI();
 
 				//Système de couleur pour les températures
 				let color = 'blue';
@@ -280,15 +280,14 @@
 				responsive: false
 			};
 
-			const configint = {
+			const config = {
 				type: 'line',
 				data: data,
 				options: option
 			};
 
 			//Création des graphiques
-			const myChartInt = new Chart(document.getElementById("myChartInt"), configint);
-			const myChartExt = new Chart(document.getElementById("myChartExt"), configext)
+			const myChart = new Chart(document.getElementById("myChartInt"), config);
 
 			//Ajout d'une valeur au graphe
 			setInterval(function adddata(model){
