@@ -105,7 +105,7 @@
 			function getDataAPI(){
 				var socket = new WebSocket('wss://ws.hothothot.dog:9502');
             	socket.onopen = function(event) {
-                	console.log("Connexion établie", event.data);
+                	console.log("Connexion établie", event.data[capteurs][0][valeur]);
 
                 	socket.send("test");
 
