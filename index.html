@@ -131,6 +131,7 @@
         		}
 			}
 
+			//Demander permission pour notifs
 			function askNotificationPermission() {
   				// La fonction qui sert effectivement à demander la permission
   				function handlePermission(permission) {
@@ -161,6 +162,39 @@
   				}
 			}
 
+			//Création des configs pour les graphique 
+			var canvas = document.getElementById("myChartInt");
+			var data = {
+				labels: ["0h", "2h", "4h", "6h", "8h", "10h", "12h"],
+				datasets: [
+					{
+						label: 'My First dataset',
+						backgroundColor: 'rgb(255, 99, 132)',
+						borderColor: 'rgb(255, 99, 132)',
+						data: [],
+					},
+					{
+						label: "My Second dataset",
+						backgroundColor: 'rgb(99, 255, 132)',
+						borderColor: 'rgb(99, 132, 255)',
+						data: [],
+					}
+				]
+			};
+			
+			var option = {
+				showLines: true,
+				responsive: false
+			};
+
+			const config = {
+				type: 'line',
+				data: data,
+				options: option
+			};
+
+			const myChart = new Chart(document.getElementById("myChartInt"), config);
+
 			var p_temperature_ext = document.getElementById('p_temperature_ext');
 			var p_temperature_int = document.getElementById('p_temperature_int');
 
@@ -180,7 +214,7 @@
 				if(document.getElementById('titre_message_int')) document.getElementById('titre_message_int').remove();
 				if(document.getElementById('titre_message_ext')) document.getElementById('titre_message_ext').remove();	
 
-				var tempint, tempext = getValueAPI();
+				var tempint, tempext = getDataAPI();
 
 				//Système de couleur pour les températures
 				let color = 'blue';
@@ -227,7 +261,6 @@
 				}
 
 				//Système de notification extérieure
-
 				let titre_message_ext = document.createElement("h4");
 				titre_message_ext.setAttribute('id', 'titre_message_ext');
 
@@ -240,7 +273,7 @@
 					const  notifications3 = new Notification ('HOthOT Hot',{body: 'Hot Hot Hot !'});
         		}
 
-				// https://developer.mozilla.org/fr/docs/Web/API/Node/insertBefore
+				// Gestion de l'historique
 				section_ext.insertBefore(titre_message_ext, p_temperature_ext); 
 				section_int.insertBefore(titre_message_int, p_temperature_int);
 
@@ -253,48 +286,12 @@
 				// https://developer.mozilla.org/fr/docs/Web/API/Node/insertBefore
 				table_tbody.insertBefore(clone_historique_ligne, table_tbody.querySelector("#ligne_modele").nextSibling);
 
-			}, 2000);
-
-			//Création des configs pour les graphique 
-			var canvas = document.getElementById("myChartInt");
-			var data = {
-				labels: ["0h", "2h", "4h", "6h", "8h", "10h", "12h"],
-				datasets: [
-					{
-						label: 'My First dataset',
-						backgroundColor: 'rgb(255, 99, 132)',
-						borderColor: 'rgb(255, 99, 132)',
-						data: [],
-					},
-					{
-						label: "My Second dataset",
-						backgroundColor: 'rgb(99, 255, 132)',
-						borderColor: 'rgb(99, 132, 255)',
-						data: [],
-					}
-				]
-			};
-			
-			var option = {
-				showLines: true,
-				responsive: false
-			};
-
-			const config = {
-				type: 'line',
-				data: data,
-				options: option
-			};
-
-			//Création des graphiques
-			const myChart = new Chart(document.getElementById("myChartInt"), config);
-
-			//Ajout d'une valeur au graphe
-			setInterval(function adddata(model){
-				myChart.data.datasets[0].data.push(model.valueExt);
-				myChart.data.datasets[1].data.push(model.valueInt);
+				// Mise à jour du graphe
+				myChart.data.datasets[0].data.push(model.tempext);
+				myChart.data.datasets[1].data.push(model.tempint);
 				myChart.data.labels.push("Newly added");
 				myChart.update();
+
 			}, 2000);
 		</script>
 	</body>
