@@ -2,14 +2,24 @@
 <html>
 	<head>
 		<title>HotHotHot</title>
-        <link rel="stylesheet" href="style.css">
+        
 		<script src="package/dist/chart.js"></script>
-		<script src="js/TempModel.js" charset="utf-8"></script>
-		<script src="js/TempObserver.js" charset="utf-8"></script>
-		<script src="js/AlerteObserver.js" charset="utf-8"></script>
+
+		<link rel="stylesheet" href="style.css">
+		<link rel="manifest" href="manifest.json">
+		<link rel="apple-touch-icon" href="/assets/images/android-chrome-192x192.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="/assets/images/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/assets/images/favicon-16x16.png">
+        <link rel="mask-icon" href="/assets/images/safari-pinned-tab.svg" color="#5bbad5">
+
+        <meta name="msapplication-TileColor" content="#00aba9">
+        <meta name="theme-color" content="#90EE90">
+		<meta name="viewport" content="width=device-width, initial-scale=0.86, maximum-scale=5.0, minimum-scale=0.86">
 		<meta charset="utf-8"/>
 	</head>
 	<body>
+		<script src="src/index.js"></script>
 		<div class="container">
 
 			<!-- Menu de navigation -->
@@ -41,6 +51,7 @@
 					<p id="MaxExt">Value Maximale Extérieure: <span aria-live="assertive" id="span_tempmax_ext"></span></p> 
 					<p id="MinExt">Value Minimale Extérieure: <span aria-live="assertive" id="span_tempmin_ext"></span></p> 
 				</div>
+				<button onclick="AlerteDialogue()">Voir les notifications</button>
 			</section>
 
 			<!-- SECTION HISTORIQUE -->
@@ -63,7 +74,7 @@
 					</tbody>
 				</table>
 				<div id="Graph">
-					<canvas id="myChart" width="400" height="400"></canvas>
+					<canvas id="myChart" width="350" height="400"></canvas>
 				</div>
 			</section>
 
@@ -85,6 +96,35 @@
 		</div>
 
 		<script type="text/javascript">
+			//Function pour les alertes boite de dialogue
+			function AlerteDialogue(){
+
+				var tempint = localStorage.getItem("ValeurInt");
+				var tempext = localStorage.getItem("ValeurExt");
+
+				if( 22 < tempint) {
+					alert("Baissez le chauffage");
+				}
+				else if ( 50 < tempint ) {
+					alert("Appelez les pompiers ou arrêtez votre barbecue !");
+				}
+				else if ( 12 > tempint ) {
+					alert("Montez le chauffage ou mettez un gros pull  !");
+				}
+				else if ( 0 > tempint ) {
+					alert("Canalisations gelées, appelez SOS plombier et mettez un bonnet !");
+				}
+
+				//Système de notification extérieure
+				if( tempext < 0 ) {
+					alert("Banquise en vue !");
+				} 
+        		else if ( 35 < tempext ) {
+					alert("Hot Hot Hot !");
+        		}
+			}
+
+
 			//Function pour afficher/cacher le menu
             function toggleMenu(){
                 const contextMenu = document.getElementById("menu-box");
@@ -140,37 +180,6 @@
 						})
 					})
         		}
-			}
-
-			//Demander permission pour notifs push
-			function askNotificationPermission() {
-  				// La fonction qui sert effectivement à demander la permission
-  				function handlePermission(permission) {
-   					 // On affiche ou non le bouton en fonction de la réponse
-    				if(Notification.permission === 'denied' || Notification.permission === 'default') {
-      					notificationBtn.style.display = 'block';
-    				} 
-					else {
-      					notificationBtn.style.display = 'none';
-    				}
- 				}
-
-  				// Vérifions si le navigateur prend en charge les notifications
-  				if (!('Notification' in window)) {
-    				console.log("Ce navigateur ne prend pas en charge les notifications.");
-  				} 
-				else {
-    				if(checkNotificationPromise()) {
-      					Notification.requestPermission().then((permission) => {
-        					handlePermission(permission);
-      					})
-    				} 
-					else {
-      					Notification.requestPermission(function(permission) {
-        					handlePermission(permission);
-      					});
-    				}
-  				}
 			}
 
 			//Création des configs pour les graphique 
@@ -282,25 +291,20 @@
 
 
 				//Système de notification intérieure
-
 				let titre_message_int = document.createElement("h4");
 				titre_message_int.setAttribute('id', 'titre_message_int');
 
 				if( 22 < tempint) {
 					titre_message_int.innerText = 'Baissez le chauffage !';
-					const  notifications = new Notification ('HOthOT Hot',{body: 'Baissez le chauffage'});
 				}
 				else if ( 50 < tempint ) {
 					titre_message_int.innerText = 'Appelez les pompiers ou arrêtez votre barbecue !';
-					const  notifications2 = new Notification ('HOthOT Hot',{body: 'Appelez les pompiers ou arrêtez votre barbecue !'});
 				}
 				else if ( 12 > tempint ) {
 					titre_message_int.innerText = 'Montez le chauffage ou mettez un gros pull  !';
-					const  notifications3 = new Notification ('HOthOT Hot',{body: 'Montez le chauffage ou mettez un gros pull  !'});
 				}
 				else if ( 0 > tempint ) {
 					titre_message_int.innerText = 'Canalisations gelées, appelez SOS plombier et mettez un bonnet !';
-					const  notifications3 = new Notification ('HOthOT Hot',{body: 'Canalisations gelées, appelez SOS plombier et mettez un bonnet !'});
 				}
 
 				//Système de notification extérieure
@@ -309,11 +313,9 @@
 
 				if( tempext < 0 ) {
 					titre_message_ext.innerText = 'Banquise en vue !';
-					const  notifications3 = new Notification ('HOthOT Hot',{body: 'Canalisations gelées, appelez SOS plombier et mettez un bonnet !'});
-        		} 
+				} 
         		else if ( 35 < tempext ) {
             		titre_message_ext.innerText = 'Hot Hot Hot !';
-					const  notifications3 = new Notification ('HOthOT Hot',{body: 'Hot Hot Hot !'});
         		}
 
 				//Affichage notification
@@ -336,26 +338,10 @@
 					table_tbody.insertBefore(clone_historique_ligne, table_tbody.querySelector("#ligne_modele").nextSibling);
 				}
 				else{
-					for(var i = 2; i < obj_the_table.rows.length; i++){
-						obj_the_table.deleteRow(i);
+					let table_tbody = document.querySelector("table tbody");
+					for(var i = 2; i < table_tbody.rows.length; i++){
+						table_tbody.deleteRow(i);
 					}
-					var tbody = document.getElementById("tbody");
-					var ligne_modele = document.createElement("tr");
-					ligne_modele.setAttribute("id", "ligne_modele");
-
-					var td_date = document.createElement("td");
-					td_date.setAttribute("class", "td_date");
-
-					var td_temperature_int = document.createElement("td");
-					td_temperature_int.setAttribute("class", "td_temperature_int");
-
-					var td_temperature_ext = document.createElement("td");
-					td_temperature_ext.setAttribute("class", "td_temperature_ext");
-
-					tbody.appendChild(ligne_modele);
-					ligne_modele.appendChild(td_date);
-					ligne_modele.appendChild(td_temperature_int);
-					ligne_modele.appendChild(td_temperature_ext);
 				}
 				// Mise à jour du graphe
 				myChart.data.datasets[0].data.push(tempext);
@@ -371,6 +357,7 @@
 				myChart.update();
 
 			}, 2500);
+
 		</script>
 	</body>
 </html>
