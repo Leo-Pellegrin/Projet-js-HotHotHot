@@ -326,7 +326,7 @@
 				// Gestion de l'historique
 				var obj_the_table = document.getElementById("historique");
 
-				if( obj_the_table.rows.length <  15) {
+				if( obj_the_table.rows.length <  8) {
 					let clone_historique_ligne = document.getElementById("ligne_modele").cloneNode(true);
 					clone_historique_ligne.setAttribute("id", "");	
 					clone_historique_ligne.querySelector(".td_date").innerText = Date().toString();
