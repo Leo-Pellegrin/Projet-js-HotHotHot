@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<title>HotHotHot</title>
-        <link rel="stylesheet" href="../Projet-js-HotHotHot/style.css">
+        <link rel="stylesheet" href="style.css">
 		<script src="package/dist/chart.js"></script>
 		<script src="js/TempModel.js" charset="utf-8"></script>
 		<script src="js/TempObserver.js" charset="utf-8"></script>
@@ -33,30 +33,38 @@
         	<section role="tabpanel" class='active' id="temp">
 				<p id="p_temperature_ext">Affichage de la température extérieure: <span aria-live="assertive" id="span_temperature_ext"></span></p>
             	<p id="p_temperature_int">Affichage de la température intérieure: <span aria-live="assertive" id="span_temperature_int"></span></p>
+				<div id="ValeurMaxMinInt">
+					<p id="MaxInt">Value Maximale Intérieure: <span aria-live="assertive" id="span_tempmax_int"></span></p> 
+					<p id="MinInt">Value Minimale Intérieure: <span aria-live="assertive" id="span_tempmin_int"></span></p> 
+				</div>	
+				<div id="ValeurMaxMinExt">
+					<p id="MaxExt">Value Maximale Extérieure: <span aria-live="assertive" id="span_tempmax_ext"></span></p> 
+					<p id="MinExt">Value Minimale Extérieure: <span aria-live="assertive" id="span_tempmin_ext"></span></p> 
+				</div>
 			</section>
 
 			<!-- SECTION HISTORIQUE -->
 			<section id="histo" >
-				<table role="tabpanel" id="histo">
-					<tr><th colspan="2">Historique</th></tr>
-					<tr>
-						<th>Date</th>
-						<th>Température</th>
-					</tr>
-					<tr id="ligne_modele">
-						<td class="td_date"></td>
-						<td class="td_temperature"></td>
-					</tr>
+				<table role="tabpanel" id="historique">
+					<thead>
+						<tr><th colspan="2">Historique</th></tr>
+						<tr>
+							<th>Date</th>
+							<th>Température Intérieure</th>
+							<th>Température Extérieure</th>
+						</tr>
+					</thead>
+					<tbody id="tbody">
+						<tr id="ligne_modele">
+							<td class="td_date"></td>
+							<td class="td_temperature_int"></td>
+							<td class="td_temperature_ext"></td>
+						</tr>
+					</tbody>
 				</table>
-				<div>
-					<p id="MaxInt">Value Maximale Intérieure: <span aria-live="assertive" id="span_tempmax_int"></span></p> 
-					<p id="MinInt">Value Minimale Intérieure: <span aria-live="assertive" id="span_tempmin_int"></span></p> 
-
-					<p id="MaxExt">Value Maximale Extérieure: <span aria-live="assertive" id="span_tempmax_ext"></span></p> 
-					<p id="MinExt">Value Minimale Extérieure: <span aria-live="assertive" id="span_tempmin_ext"></span></p> 
-
+				<div id="Graph">
 					<canvas id="myChart" width="400" height="400"></canvas>
-				</div>		
+				</div>
 			</section>
 
 
@@ -105,14 +113,14 @@
 			function getDataAPI(){
 				var socket = new WebSocket('wss://ws.hothothot.dog:9502');
             	socket.onopen = function(event) {
-                	console.log("Connexion établie", event.data[capteurs][0][valeur]);
 
                 	socket.send("test");
 
                 	socket.onmessage = function(event){
+						console.log("Connexion établie", typeof event.data);
+
                     	valueExt = event.data.capteurs[1][3];
                     	valueInt = event.data.capteurs[0][3];						
-						return valueExt, valueInt;
                 	}	
            	 	}
 				if(socket.readyState != 1){
@@ -125,13 +133,16 @@
 						method: "GET",
 					})
 					.then(function(response){
-						console.log("API par fetch", response.json());
-						return response.json();
+						response.json().then(data => {
+							localStorage.setItem("ValeurInt", data.capteurs[0].Valeur);
+							localStorage.setItem("ValeurExt", data.capteurs[1].Valeur);
+							localStorage.setItem("TimeStamp", data.capteurs[0].Timestamp);
+						})
 					})
         		}
 			}
 
-			//Demander permission pour notifs
+			//Demander permission pour notifs push
 			function askNotificationPermission() {
   				// La fonction qui sert effectivement à demander la permission
   				function handlePermission(permission) {
@@ -165,16 +176,16 @@
 			//Création des configs pour les graphique 
 			var canvas = document.getElementById("myChartInt");
 			var data = {
-				labels: ["0h", "2h", "4h", "6h", "8h", "10h", "12h"],
+				labels: [],
 				datasets: [
 					{
-						label: 'My First dataset',
+						label: 'Température Extérieure',
 						backgroundColor: 'rgb(255, 99, 132)',
 						borderColor: 'rgb(255, 99, 132)',
 						data: [],
 					},
 					{
-						label: "My Second dataset",
+						label: "Température Intérieure",
 						backgroundColor: 'rgb(99, 255, 132)',
 						borderColor: 'rgb(99, 132, 255)',
 						data: [],
@@ -193,7 +204,7 @@
 				options: option
 			};
 
-			const myChart = new Chart(document.getElementById("myChartInt"), config);
+			const myChart = new Chart(document.getElementById("myChart"), config);
 
 			var p_temperature_ext = document.getElementById('p_temperature_ext');
 			var p_temperature_int = document.getElementById('p_temperature_int');
@@ -209,12 +220,41 @@
 			var span_tempmax_ext = document.getElementById("span_tempmax_ext");
 			var span_tempmin_ext = document.getElementById("span_tempmin_ext");
 
+			localStorage.setItem("ValeurMaxInt", 0);
+			localStorage.setItem("ValeurMinInt", 50);
+			localStorage.setItem("ValeurMaxExt", 0);
+			localStorage.setItem("ValeurMinExt", 50);
+
+
 			// https://developer.mozilla.org/en-US/docs/Web/API/setInterval
 			var interval = setInterval(function(){
 				if(document.getElementById('titre_message_int')) document.getElementById('titre_message_int').remove();
 				if(document.getElementById('titre_message_ext')) document.getElementById('titre_message_ext').remove();	
 
-				var tempint, tempext = getDataAPI();
+				getDataAPI();
+
+				var tempint = localStorage.getItem("ValeurInt");
+				var tempext = localStorage.getItem("ValeurExt");
+				var tempmaxint = localStorage.getItem("ValeurMaxInt");
+				var tempminint = localStorage.getItem("ValeurMinInt");
+				var tempmaxext = localStorage.getItem("ValeurMaxExt");
+				var tempminext = localStorage.getItem("ValeurMinExt");
+
+				if(tempint > tempmaxint){
+					localStorage.setItem("ValeurMaxInt", tempint);
+				}
+				if(tempint < tempminint){
+					localStorage.setItem("ValeurMinInt", tempint);
+				}
+				if(tempext > tempmaxext){
+					localStorage.setItem("ValeurMaxExt", tempext);
+				}
+				if(tempext < tempminext){
+					localStorage.setItem("ValeurMinExt", tempext);
+				}
+
+				var TimeStamp = localStorage.getItem("TimeStamp");
+				var date = new Date(TimeStamp * 1000);
 
 				//Système de couleur pour les températures
 				let color = 'blue';
@@ -230,10 +270,16 @@
 				}
 
 				span_temperature_int.setAttribute("class", color);
-				span_temperature_int.innerText = I_temperature;
+				span_temperature_int.innerText = tempint;
 
 				span_temperature_ext.setAttribute("class", color);
-				span_temperature_ext.innerText = I_temperature;
+				span_temperature_ext.innerText = tempext;
+
+				span_tempmax_int.innerText = tempmaxint;
+				span_tempmin_int.innerText = tempminint;
+				span_tempmax_ext.innerText = tempmaxext;
+				span_tempmin_ext.innerText = tempminext;
+
 
 				//Système de notification intérieure
 
@@ -243,9 +289,6 @@
 				if( 22 < tempint) {
 					titre_message_int.innerText = 'Baissez le chauffage !';
 					const  notifications = new Notification ('HOthOT Hot',{body: 'Baissez le chauffage'});
-					
-					titre_message_int.innerText = 'Appelez les pompiers ou arrêtez votre barbecue !';
-					const  notifications1 = new Notification ('HOthOT Hot',{body: 'Appelez les pompiers ou arrêtez votre barbecue'});
 				}
 				else if ( 50 < tempint ) {
 					titre_message_int.innerText = 'Appelez les pompiers ou arrêtez votre barbecue !';
@@ -273,26 +316,61 @@
 					const  notifications3 = new Notification ('HOthOT Hot',{body: 'Hot Hot Hot !'});
         		}
 
-				// Gestion de l'historique
+				//Affichage notification
 				section_ext.insertBefore(titre_message_ext, p_temperature_ext); 
 				section_int.insertBefore(titre_message_int, p_temperature_int);
 
-				let clone_historique_ligne = document.getElementById("ligne_modele").cloneNode(true);
-				clone_historique_ligne.setAttribute("id", "");	
-				clone_historique_ligne.querySelector(".td_date").innerText = Date().toString();
-				clone_historique_ligne.querySelector(".td_temperature").innerText = I_temperature;
-				clone_historique_ligne.style.visibility = "visible";
-				let table_tbody = document.querySelector("table tbody");
-				// https://developer.mozilla.org/fr/docs/Web/API/Node/insertBefore
-				table_tbody.insertBefore(clone_historique_ligne, table_tbody.querySelector("#ligne_modele").nextSibling);
 
+				// Gestion de l'historique
+				var obj_the_table = document.getElementById("historique");
+
+				if( obj_the_table.rows.length <  15) {
+					let clone_historique_ligne = document.getElementById("ligne_modele").cloneNode(true);
+					clone_historique_ligne.setAttribute("id", "");	
+					clone_historique_ligne.querySelector(".td_date").innerText = Date().toString();
+					clone_historique_ligne.querySelector(".td_temperature_int").innerText = tempint;
+					clone_historique_ligne.querySelector(".td_temperature_ext").innerText = tempext;
+					clone_historique_ligne.style.visibility = "visible";
+					let table_tbody = document.querySelector("table tbody");
+					// https://developer.mozilla.org/fr/docs/Web/API/Node/insertBefore
+					table_tbody.insertBefore(clone_historique_ligne, table_tbody.querySelector("#ligne_modele").nextSibling);
+				}
+				else{
+					for(var i = 2; i < obj_the_table.rows.length; i++){
+						obj_the_table.deleteRow(i);
+					}
+					var tbody = document.getElementById("tbody");
+					var ligne_modele = document.createElement("tr");
+					ligne_modele.setAttribute("id", "ligne_modele");
+
+					var td_date = document.createElement("td");
+					td_date.setAttribute("class", "td_date");
+
+					var td_temperature_int = document.createElement("td");
+					td_temperature_int.setAttribute("class", "td_temperature_int");
+
+					var td_temperature_ext = document.createElement("td");
+					td_temperature_ext.setAttribute("class", "td_temperature_ext");
+
+					tbody.appendChild(ligne_modele);
+					ligne_modele.appendChild(td_date);
+					ligne_modele.appendChild(td_temperature_int);
+					ligne_modele.appendChild(td_temperature_ext);
+				}
 				// Mise à jour du graphe
-				myChart.data.datasets[0].data.push(model.tempext);
-				myChart.data.datasets[1].data.push(model.tempint);
-				myChart.data.labels.push("Newly added");
+				myChart.data.datasets[0].data.push(tempext);
+				myChart.data.datasets[1].data.push(tempint);
+				myChart.data.labels.push(date.getHours() + ":"+date.getMinutes() + ":"+date.getSeconds());
+
+				if (myChart.data.datasets[0].data.length >= 30){	// Pas plus de 30 valeurs affichée en même temps
+					myChart.data.labels = [];
+    				myChart.data.datasets.forEach((dataset) => {
+        				dataset.data = [];
+    				});
+				}
 				myChart.update();
 
-			}, 2000);
+			}, 2500);
 		</script>
 	</body>
 </html>
