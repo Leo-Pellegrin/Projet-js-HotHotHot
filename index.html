@@ -158,15 +158,6 @@
 		</div>
 
 		<script type="text/javascript">
-		//Notifications push
-			var button = document.getElementById("notifications");  
-			button.addEventListener('click', function(e) {  
-				Notification.requestPermission().then(function(result) {  
-					if(result === 'granted') {  
-						randomNotification();  
-			}  
-				});  
-			});
 
 			//Function pour les alertes boite de dialogue
 			function AlerteDialogue(){
