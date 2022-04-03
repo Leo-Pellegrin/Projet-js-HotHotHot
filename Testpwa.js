@@ -64,7 +64,7 @@ publicself.addEventListener("push", function (event: PushEvent) {
     public async Task SendWebPush(string endpoint, string p256dh, string auth, Article blogPost)
     {
         var subscription = new PushSubscription(endpoint, p256dh, auth);
-        var vapidDetails = new VapidDetails("mathis.plazi0@gmail.com", PublicKey, PrivateKey);
+        var vapidDetails = new VapidDetails("mail@mail.com", PublicKey, PrivateKey);
         var webPushClient = new WebPushClient();
         var payload = JsonConvert.SerializeObject(blogPost);
         try
