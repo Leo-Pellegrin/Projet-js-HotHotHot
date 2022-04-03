@@ -23,15 +23,25 @@
 		<div class="container">
 
 			<!-- Menu de navigation -->
-			<nav>
-				<button id="menu" onclick="toggleMenu()">Menu</button>
+			<input type="checkbox" id="check">
+
+			<label for="check">
+				<i class="fa-solid fa-bars" id="btn"></i>
+				<i class="fa-solid fa-xmark" id="cancel"></i>
+			</label>
+
+			<div class="sidenav">
+				<header>Menu</header>
 				<ul id="menu-box" role="tablist">
+					<li role="tab"><a href="#acceuil">Accueil</a></li>
 					<li role="tab"><a href="#temp">Température</a></li>
 					<li role="tab"><a href="#histo">Historique</a></li>
-					<li role="tab"><a href="contact.html">Se connecter</a></li>
 					<li role="tab"><a href="#doc">Documentation</a></li>
+					<li role="tab"><a href="contact.html">Se connecter</a></li>
 				</ul>
-			</nav>
+			</div>
+
+		<div class="container">
 
 			<!-- Section Accueil -->
 			<section id="acceuil">
