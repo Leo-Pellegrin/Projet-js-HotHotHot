@@ -37,7 +37,6 @@
 			<section id="acceuil">
 				<h1>HotHotHot</h1>
 				<p> Bonjour, Bienvenue sur notre site ! </p>
-				<button id="add-button">Bouton pour télécharger</button>
 			</section>
 
 			<!-- SECTION TEMPERATURE -->
@@ -87,7 +86,69 @@
 		
 			<!-- SECTION DOCUMENTATION -->
 			<section role="tabpanel" id="doc">
-				<p> Test doc</p>
+			    <h1>Documentation</h3>
+			    
+			      <h3>Présentation :</h3>
+			      
+			   <!-- Cadre de présentation -->
+			   <div class="cadrepresentation">
+			       <!-- Cration de chaque profil -->
+			       <div class="profile">
+			           <div class="nom">
+			               <h4> Léo </h4>
+			               <p> Je suis Léo Pellegrin. Rôle: Mise en place de la PWA pour la rendre installable ainsi que de l'API + mise en cache par localStorage</p>
+			           </div>
+			       </div>  
+			       
+			       <div class="profile2">
+			           <div class="nom">
+			               <h4> Kalid </h4>
+			               <p> Je suis Kalid Moussa Mohamed. Rôle: Système d'alerte par une boite de dialogue ainsi que la tentative de réalisation de Notifications Push  </p>
+			           </div>
+			       </div>
+			       
+			       <div class="profile3">
+			           <div class="nom">
+			               <h4> Kévin </h4>
+			               <p> Je suis Kévin Tan. Rôle: Réalisation du menu de navigation ainsi que de la structure en css + service worker </p>
+			           </div>
+			       </div>
+			       
+			       <div class="profile4">
+			           <div class="nom">
+			               <h4> Mathis </h4>
+                        
+			           </div>
+			           
+			           <div class="info">
+                          <p> Je suis Mathis Plazi. Rôle: Système d'alerte par une boite de dialogue ainsi que tentative de réalisation des Notifications push </p>
+                       </div>   
+			       </div>
+			   </div>    
+			   <h3>Outils et organisations :</h3>
+			   <div class="outils">
+				   <p>Nous avons principalement utilisé discord pour communiquer entre nous et nous répartir les tâches</p></br>
+				   <p>Nous avons aussi créer un Google Docs pour mettre à jour les avancements (<a href="https://docs.google.com/document/d/1t31j1PHHKLpmqquaUZmiNNvmcWGlwONZRy53v4xI280/edit?usp=sharing">lien</a>)</p>
+				   <p>L'outil de versionnage GitHub a été aussi très utilisé par l'équipe pour regrouper le travail effectué (<a href="https://github.com/Leo-Pellegrin/Projet-js-HotHotHot">lien</a>)</p>
+				   <p>Certaines personnes ont utilisés des dépots différents pour tester et ne pas spammer le dépôt principal</p>
+			   </div>
+			   <h3>Difficultés rencontrées :</h3>
+			   <div class="difficultes">
+					<p>La première difficulté rencontrée est le service worker car nous avons des erreurs après qu'il soit mis en place et que son fonctionnement était établie</p>
+					<p>Nous n'avons pas réussi à régler ce problème sur le service worker et le téléchargement de l'application en mode hors ligne</p></br>
+					<p>La deuxième difficulté rencontrée est la contrainte de temps. Nous avions beaucoup de projet à rendre pendant la même période donc l'organisation était quelque peu compliqué</p>
+				</div>
+				<h3>Si nous devions recommencer ce projet :</h3>
+				<div class="recommencer">
+					<p>Les pratiques que nous changerions seraient d'abord l'organisation mais aussi la répartition du temps sur les différents lots proposés dans le sujet. Nous n'avons pas réussi à organiser le temps comme nous l'aurions voulu</p>
+				</div>
+
+			       
+                    
+			   
+			      
+			    
+				
 			</section>
 
 			<!-- BAS DE PAGE -->
@@ -97,37 +158,7 @@
 		</div>
 
 		<script type="text/javascript">
-			//Bouton d'installation
-			let deferredPrompt;  
-			const addBtn = document.querySelector('.add-button');  
-			addBtn.style.display = 'none';  
-		
-			window.addEventListener('beforeinstallprompt', (e) => {  
-				// Prevent Chrome 67 and earlier from automatically showing the prompt  
-				e.preventDefault();  
-				// Stash the event so it can be triggered later.  
-				deferredPrompt = e;  
-				// Update UI to notify the user they can add to home screen  
-				addBtn.style.display = 'block';  
-			
-				addBtn.addEventListener('click', (e) => {  
-					// hide our user interface that shows our A2HS button  
-					addBtn.style.display = 'none';  
-					// Show the prompt  
-					deferredPrompt.prompt();  
-					// Wait for the user to respond to the prompt  
-					deferredPrompt.userChoice.then((choiceResult) => {  
-							if (choiceResult.outcome === 'accepted') {  
-								console.log('User accepted the A2HS prompt');  
-						} else {  
-								console.log('User dismissed the A2HS prompt');  
-						}  
-						deferredPrompt = null;  
-					});  
-				});  
-			});
-
-			//Notifications push
+		//Notifications push
 			var button = document.getElementById("notifications");  
 			button.addEventListener('click', function(e) {  
 				Notification.requestPermission().then(function(result) {  
