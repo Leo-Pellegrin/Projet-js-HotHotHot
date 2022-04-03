@@ -43,8 +43,9 @@ html, body{
 #ligne_modele {
     visibility: hidden;
 }
-section, table {
-    display: none;
+
+table{
+    margin-bottom: 10%;
 }
 
 section.active {
