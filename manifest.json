@@ -1,0 +1,23 @@
+{
+    "name" : "HotHotHot",
+    "short_name" : "HOTHOTHOT",
+    "display" : "fullscreen",
+    "start_url" : "https://leo-pellegrin.github.io/test-hothothot/",
+    "icons" : [
+        {
+            "src" : "./assets/images/android-chrome-512x512.png",
+            "sizes" : "512x512",
+            "type" : "image/png",
+            "purpose": "any"
+        },
+        {
+            "src" : "./assets/images/android-chrome-192x192.png",
+            "sizes" : "192x192",
+            "type" : "image/png",
+            "purpose": "any"
+        }
+    ],
+
+    "theme_color" : "#90EE90",
+    "background_color" : "#C0C0C0"
+}
