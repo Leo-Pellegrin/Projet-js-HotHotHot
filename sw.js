@@ -1,7 +1,7 @@
 self.addEventListener("install", e => {
     e.waitUntil(
         caches.open("static").then(cache =>{
-            return cache.addAll(["./", "./style/style.css", "./assets/images/android-chrome-192x192.png", "./assets/images/android-chrome-512x512.png", "./sw.js"])
+            return cache.addAll(["./", "./style.css", "./assets/images/android-chrome-192x192.png", "./assets/images/android-chrome-512x512.png", "./sw.js"])
         })
     );
 });
